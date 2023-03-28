@@ -1,29 +1,47 @@
 <?php
-// Establish a database connection
-$host = 'localhost';
-$user = 'username';
-$pass = 'password';
-$dbname = 'database_name';
-$conn = mysqli_connect($host, $user, $pass, $dbname);
+if(isset($_POST['search'])) {
+    // Get the search query
+    $query = $_POST['search'];
 
-// Retrieve the search term from the query string
-$search_term = $_GET['search_term'];
+    // Perform a database search for the query
+    $results = perform_search($query);
 
-// Create a SQL query to search the database
-$query = "SELECT * FROM table_name WHERE column_1 LIKE '%{$search_term}%' OR column_2 LIKE '%{$search_term}%'";
-
-// Execute the query
-$result = mysqli_query($conn, $query);
-
-// Display the search results
-if (mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo "Result: {$row['column_1']} - {$row['column_2']}<br>";
+    // Display the search results
+    if(!empty($results)) {
+        foreach($results as $result) {
+            // Output the search result
+            echo '<div class="result">';
+            echo '<h3>'.$result['name'].'</h3>';
+            echo '<p>'.$result['description'].'</p>';
+            echo '</div>';
+        }
+    } else {
+        // If no results are found, display a message
+        echo '<p>No results found for "'.$query.'".</p>';
     }
-} else {
-    echo "No results found.";
 }
 
-// Close the database connection
-mysqli_close($conn);
+// Function to perform a search on the database
+function perform_search($query) {
+    // Connect to the database
+    $conn = new mysqli('localhost', 'username', 'password', 'database_name');
+
+    // Build the SQL query
+    $sql = "SELECT * FROM providers WHERE name LIKE '%$query%' OR description LIKE '%$query%'";
+
+    // Execute the query
+    $result = $conn->query($sql);
+
+    // If there are results, fetch them and store them in an array
+    if($result->num_rows > 0) {
+        $results = array();
+        while($row = $result->fetch_assoc()) {
+            $results[] = $row;
+        }
+        return $results;
+    } else {
+        // If no results are found, return an empty array
+        return array();
+    }
+}
 ?>
