@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/198f9034-d423-43b7-94ee-9dcdfc927fa5/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/MedRate",
+    "appService.deploySubpath": "images"
+}
